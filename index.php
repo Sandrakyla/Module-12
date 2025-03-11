@@ -73,6 +73,49 @@ function getShortName($fullname) {
     return $parts['name'] . ' ' . $surnameInitial;
 }
 
+// Функция для определения пола по ФИО
+function getGenderFromName($fullname) {
+    // Разбиваем ФИО на части
+    $parts = getPartsFromFullname($fullname);
+
+    $genderScore = 0;
+
+    // Проверяем признаки мужского пола
+    if (mb_substr($parts['patronomyc'], -2) === 'ич') {
+        $genderScore += 1;
+    }
+
+    if (mb_substr($parts['name'], -1) === 'й' || mb_substr($parts['name'], -1) === 'н') {
+        $genderScore += 1;
+    }
+
+    if (mb_substr($parts['surname'], -1) === 'в') {
+        $genderScore += 1;
+    }
+
+    // Проверяем признаки женского пола
+    if (mb_substr($parts['patronomyc'], -3) === 'вна') {
+        $genderScore -= 1;
+    }
+
+    if (mb_substr($parts['name'], -1) === 'а') {
+        $genderScore -= 1;
+    }
+
+    if (mb_substr($parts['surname'], -2) === 'ва') {
+        $genderScore -= 1;
+    }
+
+    // Определяем пол по итоговому значению
+    if ($genderScore > 0) {
+        return 1; // Мужской пол
+    } elseif ($genderScore < 0) {
+        return -1; // Женский пол
+    } else {
+        return 0; // Неопределенный пол
+    }
+}
+
 foreach ($example_persons_array as $person) {
     // Разбиваем ФИО на части
     $parts = getPartsFromFullname($person['fullname']);
@@ -87,4 +130,14 @@ foreach ($example_persons_array as $person) {
 foreach ($example_persons_array as $person) {
     $shortName = getShortName($person['fullname']);
     echo $shortName . "\n";
+}
+
+foreach ($example_persons_array as $person) {
+    $gender = getGenderFromName($person['fullname']);
+    $genderText = match ($gender) {
+        1 => 'мужской пол',
+        -1 => 'женский пол',
+        0 => 'неопределенный пол',
+    };
+    echo $person['fullname'] . ' - ' . $genderText . "\n";
 }
