@@ -116,6 +116,42 @@ function getGenderFromName($fullname) {
     }
 }
 
+// Функция для определения полового состава аудитории
+function getGenderDescription($personsArray) {
+    // Подсчитываем количество людей каждого пола
+    $maleCount = 0;
+    $femaleCount = 0;
+    $unknownCount = 0;
+
+    foreach ($personsArray as $person) {
+        $gender = getGenderFromName($person['fullname']);
+        if ($gender === 1) {
+            $maleCount++;
+        } elseif ($gender === -1) {
+            $femaleCount++;
+        } else {
+            $unknownCount++;
+        }
+    }
+
+    // Общее количество людей
+    $totalCount = count($personsArray);
+
+    // Вычисляем процентное соотношение
+    $malePercentage = round(($maleCount / $totalCount) * 100, 1);
+    $femalePercentage = round(($femaleCount / $totalCount) * 100, 1);
+    $unknownPercentage = round(($unknownCount / $totalCount) * 100, 1);
+
+    // Формируем результат
+    $result = "Гендерный состав аудитории:\n";
+    $result .= "---------------------------\n";
+    $result .= "Мужчины - $malePercentage%\n";
+    $result .= "Женщины - $femalePercentage%\n";
+    $result .= "Не удалось определить - $unknownPercentage%\n";
+
+    return $result;
+}
+
 foreach ($example_persons_array as $person) {
     // Разбиваем ФИО на части
     $parts = getPartsFromFullname($person['fullname']);
@@ -141,3 +177,5 @@ foreach ($example_persons_array as $person) {
     };
     echo $person['fullname'] . ' - ' . $genderText . "\n";
 }
+
+echo getGenderDescription($example_persons_array);
