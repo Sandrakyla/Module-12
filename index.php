@@ -152,6 +152,43 @@ function getGenderDescription($personsArray) {
     return $result;
 }
 
+// Функция для поиска идеальной пары
+function getPerfectPartner($surname, $name, $patronomyc, $personsArray) {
+
+    $surname = mb_convert_case($surname, MB_CASE_TITLE, "UTF-8");
+    $name = mb_convert_case($name, MB_CASE_TITLE, "UTF-8");
+    $patronomyc = mb_convert_case($patronomyc, MB_CASE_TITLE, "UTF-8");
+
+    // Склеиваем ФИО
+    $fullname = getFullnameFromParts($surname, $name, $patronomyc);
+
+    // Определяем пол
+    $gender = getGenderFromName($fullname);
+
+    // Ищем партнера противоположного пола
+    do {
+
+        $randomIndex = array_rand($personsArray);
+        $partner = $personsArray[$randomIndex];
+
+        // Определяем пол выбранного человека
+        $partnerGender = getGenderFromName($partner['fullname']);
+    } while ($partnerGender === $gender || $partnerGender === 0);
+
+    // Сокращаем ФИО для вывода
+    $shortName = getShortName($fullname);
+    $shortPartnerName = getShortName($partner['fullname']);
+
+    // Генерируем случайный процент совместимости
+    $compatibilityPercentage = round(rand(5000, 10000) / 100, 2);
+
+    // Формируем результат
+    $result = "$shortName + $shortPartnerName =\n";
+    $result .= "♡ Идеально на $compatibilityPercentage% ♡\n";
+
+    return $result;
+}
+
 foreach ($example_persons_array as $person) {
     // Разбиваем ФИО на части
     $parts = getPartsFromFullname($person['fullname']);
@@ -179,3 +216,5 @@ foreach ($example_persons_array as $person) {
 }
 
 echo getGenderDescription($example_persons_array);
+
+echo getPerfectPartner('ИвАнОв', 'иВаН', 'ИвАнОвИч', $example_persons_array);
