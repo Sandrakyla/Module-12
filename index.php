@@ -61,6 +61,18 @@ function getPartsFromFullname($fullname) {
     ];
 }
 
+// Функция для сокращения ФИО
+function getShortName($fullname) {
+    // Разбиваем ФИО на части
+    $parts = getPartsFromFullname($fullname);
+
+    // Сокращаем фамилию до первой буквы и добавляем точку
+    $surnameInitial = mb_substr($parts['surname'], 0, 1) . '.';
+
+    // Возвращаем результат "Имя Ф."
+    return $parts['name'] . ' ' . $surnameInitial;
+}
+
 foreach ($example_persons_array as $person) {
     // Разбиваем ФИО на части
     $parts = getPartsFromFullname($person['fullname']);
@@ -70,4 +82,9 @@ foreach ($example_persons_array as $person) {
     // Собираем ФИО обратно
     $fullname = getFullnameFromParts($parts['surname'], $parts['name'], $parts['patronomyc']);
     echo "Собранное ФИО: " . $fullname . "\n";
+}
+
+foreach ($example_persons_array as $person) {
+    $shortName = getShortName($person['fullname']);
+    echo $shortName . "\n";
 }
